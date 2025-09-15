@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.math.Vector3;
@@ -54,6 +55,8 @@ public class GameScreen extends ScreenAdapter {
 //        "models/Cube/Cube.gltf",
 	};
 
+    Color fogColor = Color.BLACK;
+
 	WgModelBatch modelBatch;
 	PerspectiveCamera cam;
     CamController controller;
@@ -80,7 +83,7 @@ public class GameScreen extends ScreenAdapter {
 		cam.position.set(0, 4, 4);
 		cam.lookAt(0,4,0);
 		cam.near = 0.1f;
-		cam.far = 1000f;		// extend far distance to avoid clipping the skybox
+		cam.far = 20f;		// also affects fog distance
 
 
 		// queue for asynchronous loading
@@ -96,14 +99,27 @@ public class GameScreen extends ScreenAdapter {
         // Create an environment with lights
         environment = new Environment();
 
-        float ambientLevel = 0.1f;
+        float ambientLevel = 0.02f;
         ColorAttribute ambient =  ColorAttribute.createAmbientLight(ambientLevel, ambientLevel, ambientLevel, 1f);
         environment.set(ambient);
 
         DirectionalLight dirLight1 = new DirectionalLight();
-        dirLight1.setDirection(.1f, -.8f, .2f);
-        dirLight1.setColor(Color.WHITE);
+        dirLight1.setDirection(.5f, -.4f, .5f);
+        dirLight1.setColor(setIntensity(Color.ORANGE, .6f));
         environment.add(dirLight1);
+
+        DirectionalLight dirLight2 = new DirectionalLight();
+        dirLight2.setDirection(-.5f, .4f, -.5f);
+        dirLight2.setColor(setIntensity(Color.PURPLE, 0.3f));
+        environment.add(dirLight2);
+
+        PointLight pointLight2 = new PointLight();
+        pointLight2.setPosition(1f, 1f, 1f);
+        pointLight2.setColor(Color.RED);
+        pointLight2.setIntensity(20f);
+        environment.add(pointLight2);
+
+        environment.set(new ColorAttribute(ColorAttribute.Fog,fogColor));
 
 		controller = new CamController(cam);
 		Gdx.input.setInputProcessor(controller);
@@ -138,6 +154,16 @@ public class GameScreen extends ScreenAdapter {
 
 	}
 
+    private final Color tmpColor = new Color();
+
+    Color setIntensity(Color color, float intensity){
+        tmpColor.set(color);
+        tmpColor.r *= intensity;
+        tmpColor.g *= intensity;
+        tmpColor.b *= intensity;
+        return tmpColor;
+    }
+
     boolean startLoading = false;
 
 	public void render (float delta) {
@@ -165,7 +191,7 @@ public class GameScreen extends ScreenAdapter {
 //			instance.transform.rotate(Vector3.Y, 15f*delta);
 
         controller.update(delta);
-        //cam.update();
+
 
 		WgScreenUtils.clear(Color.BLACK,true);
 
