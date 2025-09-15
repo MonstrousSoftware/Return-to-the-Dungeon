@@ -1,7 +1,9 @@
 package com.monstrous.dungeon.teavm;
 
 import com.github.xpenatan.gdx.backends.teavm.config.AssetFileHandle;
+//import com.github.xpenatan.gdx.backends.teavm.config.TeaBuildConfiguration;
 import com.github.xpenatan.gdx.backends.teavm.config.TeaBuildConfiguration;
+//import com.github.xpenatan.gdx.backends.teavm.config.TeaBuilder;
 import com.github.xpenatan.gdx.backends.teavm.config.TeaBuilder;
 import com.github.xpenatan.gdx.backends.teavm.config.plugins.TeaReflectionSupplier;
 import java.io.File;
@@ -13,17 +15,25 @@ import org.teavm.vm.TeaVMOptimizationLevel;
 /** Builds the TeaVM/HTML application. */
 public class TeaVMBuilder {
     public static void main(String[] args) throws IOException {
+
+
         TeaBuildConfiguration teaBuildConfiguration = new TeaBuildConfiguration();
         teaBuildConfiguration.assetsPath.add(new AssetFileHandle("../assets"));
+        teaBuildConfiguration.shouldGenerateAssetFile = true;
         teaBuildConfiguration.webappPath = new File("build/dist").getCanonicalPath();
 
         // Register any extra classpath assets here:
         // teaBuildConfiguration.additionalAssetsClasspathFiles.add("com/monstrous/dungeon/asset.extension");
+//        String reflectionPackage = "com.badlogic.gdx.math";
+//        TeaReflectionSupplier.addReflectionClass(reflectionPackage);
 
         // Register any classes or packages that require reflection here:
         // TeaReflectionSupplier.addReflectionClass("com.monstrous.dungeon.reflect");
 
-        TeaVMTool tool = TeaBuilder.config(teaBuildConfiguration);
+        TeaBuilder.config(teaBuildConfiguration);       // changed signature!
+        TeaVMTool tool = new TeaVMTool();
+
+
         // You can uncomment the line below to use WASM instead of JavaScript as a target.
         // Some code can see very significant performance benefits from WASM, and some won't.
 //        tool.setTargetType(TeaVMTargetType.WEBASSEMBLY_GC);
@@ -35,5 +45,6 @@ public class TeaVMBuilder {
         // You can change it to tool.setObfuscated(true) when you are preparing to release, to try to hide your original code.
         tool.setObfuscated(false);
         TeaBuilder.build(tool);
+
     }
 }

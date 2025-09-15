@@ -26,6 +26,8 @@ dependencies {
   implementation "org.teavm:teavm-jso-impl:$teaVMVersion"
   implementation "org.teavm:teavm-jso:$teaVMVersion"
   implementation "org.teavm:teavm-tooling:$teaVMVersion"
+  implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+  implementation "io.github.monstroussoftware.gdx-webgpu:gdx-teavm-webgpu:$gdxWebGPUVersion"
   implementation project(':core')
 
 }
@@ -33,7 +35,8 @@ dependencies {
 tasks.register("buildJavaScript", JavaExec) {
   dependsOn classes
   setDescription("Transpile bytecode to JavaScript via TeaVM")
-  mainClass.set(project.mainClassName)
+//  mainClass.set(project.mainClassName)
+  mainClass.set("com.monstrous.dungeon.teavm.TeaVMBuilder")
   setClasspath(sourceSets.main.runtimeClasspath)
 }
 build.dependsOn buildJavaScript

@@ -3,6 +3,7 @@ package com.monstrous.dungeon.teavm;
 import com.github.xpenatan.gdx.backends.teavm.TeaApplicationConfiguration;
 import com.github.xpenatan.gdx.backends.teavm.TeaApplication;
 import com.monstrous.dungeon.Main;
+import com.monstrous.gdx.webgpu.backends.teavm.WgTeaApplication;
 
 /**
  * Launches the TeaVM/HTML application.
@@ -14,11 +15,15 @@ public class TeaVMLauncher {
         //config.width = 640;
         //config.height = 480;
         //// If width and height are both 0, then the app will use all available space.
-        //config.width = 0;
-        //config.height = 0;
+        config.width = 0;
+        config.height = 0;
         //// If width and height are both -1, then the app will fill the canvas size.
-        config.width = -1;
-        config.height = -1;
-        new TeaApplication(new Main(), config);
+        //config.width = -1;
+       // config.height = -1;
+        config.showDownloadLogs = true;
+        //config.preloadAssets = true;
+        //config.useGL30 = true;
+
+        new WgTeaApplication(new Main(), config);
     }
 }
