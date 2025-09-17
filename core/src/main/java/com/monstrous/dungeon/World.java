@@ -9,6 +9,11 @@ import com.badlogic.gdx.utils.Array;
 import com.monstrous.dungeon.map.DungeonMap;
 import com.monstrous.dungeon.map.LevelData;
 import com.monstrous.dungeon.map.Room;
+import com.monstrous.dungeon.populus.Enemies;
+import com.monstrous.dungeon.populus.GameObject;
+import com.monstrous.dungeon.populus.GameObjectTypes;
+import com.monstrous.dungeon.populus.Populator;
+
 
 public class World {
     private final static int MAP_WIDTH = 30;
@@ -24,8 +29,8 @@ public class World {
     public boolean gameCompleted;
 
     public DungeonMap map;                  // static architecture
-//    public GameObject rogue;                // the player
-//    public Enemies enemies;                 // subset of gameObjects
+    public GameObject rogue;                // the player
+    public Enemies enemies;                 // subset of gameObjects
     public boolean isRebuilt;               // force scenes to be recreated
     public float secondsElapsed;
     public Array<LevelData> levelDataArray; // data for all levels
@@ -37,14 +42,14 @@ public class World {
         seed = 1234; //MathUtils.random(1,9999);
         gameOver = false;
         gameCompleted = false;
-//        GameObjectTypes gameObjectTypes = new GameObjectTypes();
+        GameObjectTypes gameObjectTypes = new GameObjectTypes();
         levelDataArray = new Array<>();
         create();
     }
 
     private void create(){
-//        MessageBox.clear();
-//        rogue = null;
+        MessageBox.clear();
+        rogue = null;
         level = 0;
         secondsElapsed = 0;
         levelDataArray.clear();
@@ -76,7 +81,7 @@ public class World {
             seed = MathUtils.random(1,9999);
         gameOver = false;
         gameCompleted = false;
-        //MessageBox.addLine("World seed: "+seed);
+        MessageBox.addLine("World seed: "+seed);
         create();
     }
 
@@ -114,22 +119,22 @@ public class World {
 
         map = new DungeonMap(seed, level, w, h, stairsFromAbove, levelData.stairPortals);
 
-//        enemies = new Enemies();
-//        enemies.addFromObjects(levelData.gameObjects);
-//
-//        if(rogue == null) {  // don't create new rogue when changing level
-//            rogue = Populator.placeRogue(map, levelData.gameObjects);
-//            startRoomId = map.roomCode[rogue.y][rogue.x];     // remember the starting room, the rogue needs to return here
-//        }
-//
-//        if(newLevel) {
-//            if (level == swordLevel)
-//                Populator.placeSword(map, levelData.gameObjects);
-//            Populator.distributeGoodies(map, level, levelData.gameObjects);
-//            Populator.distributeEnemies(map, level, levelData.gameObjects, enemies);
-//        }
-//
-//        levelData.gameObjects.clearOccupant(rogue.x, rogue.y);
+        enemies = new Enemies();
+        enemies.addFromObjects(levelData.gameObjects);
+
+        if(rogue == null) {  // don't create new rogue when changing level
+            rogue = Populator.placeRogue(map, levelData.gameObjects);
+            startRoomId = map.roomCode[rogue.y][rogue.x];     // remember the starting room, the rogue needs to return here
+        }
+
+        if(newLevel) {
+            if (level == swordLevel)
+                Populator.placeSword(map, levelData.gameObjects);
+            Populator.distributeGoodies(map, level, levelData.gameObjects);
+            Populator.distributeEnemies(map, level, levelData.gameObjects, enemies);
+        }
+
+        levelData.gameObjects.clearOccupant(rogue.x, rogue.y);
 
     }
 }

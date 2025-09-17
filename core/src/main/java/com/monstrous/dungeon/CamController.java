@@ -34,14 +34,14 @@ public class CamController extends InputAdapter {
 
     @Override
     public boolean keyDown (int keycode) {
-        System.out.println("Pressed "+keycode);
+        //System.out.println("Pressed "+keycode);
         keys.put(keycode, keycode);
         return true;
     }
 
     @Override
     public boolean keyUp (int keycode) {
-        System.out.println("Released "+keycode);
+        //System.out.println("Released "+keycode);
         keys.remove(keycode, 0);
         return true;
     }
