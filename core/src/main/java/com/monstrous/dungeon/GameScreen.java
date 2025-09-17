@@ -8,10 +8,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.monstrous.dungeon.input.CamController;
+import com.monstrous.dungeon.input.KeyController;
+import com.monstrous.dungeon.input.OrbitCameraController;
 import com.monstrous.dungeon.populus.GameObject;
 import com.monstrous.dungeon.render.DungeonScenes;
 import com.monstrous.dungeon.render.GameObjectScenes;
@@ -42,7 +46,7 @@ public class GameScreen extends ScreenAdapter {
 
 
 	PerspectiveCamera cam;
-    CamController camController;
+    OrbitCameraController camController;
     KeyController keyController;
 	AssetManager assets;
 	ScreenViewport viewport;
@@ -99,7 +103,7 @@ public class GameScreen extends ScreenAdapter {
 		stage = new WgStage(viewport);
 		//stage.setDebugAll(true);
 
-        camController = new CamController(cam);
+        camController = new OrbitCameraController(cam);
         keyController = new KeyController(game.world, dungeonScenes);
 		InputMultiplexer im = new InputMultiplexer();
 		Gdx.input.setInputProcessor(im);
@@ -125,7 +129,8 @@ public class GameScreen extends ScreenAdapter {
     boolean startLoading = false;
 
     private final Vector3 focus = new Vector3();
-    private final Vector3 camPos = new Vector3();
+    private final Vector3 playerDirection = new Vector3();
+    private final Matrix4 mat = new Matrix4();
 
 	public void render (float delta) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
@@ -176,11 +181,14 @@ public class GameScreen extends ScreenAdapter {
         }
 
         focalActor.scene.transform.getTranslation(focus);
-        cam.lookAt(focus);
-        camPos.set(focus).add(8,0,0);
-        cam.position.set(camPos);
+//        cam.lookAt(focus);
+//        camPos.set(focus).add(8,0,0);
+//        cam.position.set(camPos);
 
-        camController.update(delta);
+        mat.setToRotation(Vector3.Y, 180-focalActor.direction.ordinal() * 90);
+        playerDirection.set(Vector3.Z).mul(mat);
+
+        camController.update(focus, playerDirection);
 
         sceneManager.render(cam);
 

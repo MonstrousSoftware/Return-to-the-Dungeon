@@ -1,7 +1,10 @@
-package com.monstrous.dungeon;
+package com.monstrous.dungeon.input;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.monstrous.dungeon.MessageBox;
+import com.monstrous.dungeon.Sounds;
+import com.monstrous.dungeon.World;
 import com.monstrous.dungeon.map.Direction;
 import com.monstrous.dungeon.map.Room;
 import com.monstrous.dungeon.map.TileType;
@@ -105,6 +108,14 @@ public class KeyController extends InputAdapter {
                     break;
                 case Input.Keys.DOWN:
                     tryMoveRogue(0, -1, Direction.SOUTH);
+                    done = true;
+                    break;
+                case Input.Keys.O:
+                    turnRogue(true);
+                    done = true;
+                    break;
+                case Input.Keys.P:
+                    turnRogue(false);
                     done = true;
                     break;
                 case Input.Keys.SPACE:

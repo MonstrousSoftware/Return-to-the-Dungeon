@@ -1,4 +1,4 @@
-package com.monstrous.dungeon;
+package com.monstrous.dungeon.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntIntMap;
+import com.monstrous.dungeon.Settings;
 
 // based on https://monstroussoftware.github.io/2023/11/02/Tutorial-3D-step2.html
 //
