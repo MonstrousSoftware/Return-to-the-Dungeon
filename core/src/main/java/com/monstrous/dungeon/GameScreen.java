@@ -34,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.monstrous.gdx.webgpu.assets.WgAssetManager;
 import com.monstrous.gdx.webgpu.graphics.g2d.WgBitmapFont;
@@ -49,10 +50,13 @@ import com.monstrous.gdx.webgpu.scene2d.WgStage;
 public class GameScreen extends ScreenAdapter {
 
 	final static String[] fileNames = {
-        "models/Dungeon/dungeon-room.gltf",
+//        "models/Cube/Cube.gltf",
+        "models/DungeonModular/dungeonmodular.gltf",
+        "characters/Warrior.gltf",
+//        "models/Dungeon/dungeon-room.gltf",
 //        "models/Dungeon/dungeon-floor.gltf",
 //        "models/Dungeon/dungeon-walls.gltf",
-//        "models/Cube/Cube.gltf",
+
 	};
 
     Color fogColor = Color.BLACK;
@@ -61,7 +65,9 @@ public class GameScreen extends ScreenAdapter {
 	PerspectiveCamera cam;
     CamController controller;
 	Model model;
-	ModelInstance instance;
+    private Array<ModelInstance> instances;
+//	ModelInstance RoomInstance;
+//    ModelInstance CharacterInstance;
 	AssetManager assets;
 	ScreenViewport viewport;
 	WgStage stage;
@@ -71,6 +77,7 @@ public class GameScreen extends ScreenAdapter {
 	WgSpriteBatch batch;
 	WgBitmapFont font;
     Environment environment;
+    ModelInstance instance, instance2;
 
 
 	// application
@@ -91,10 +98,11 @@ public class GameScreen extends ScreenAdapter {
         // load the rest of the assets while the user is admiring the dragon :-)
 		assets = new WgAssetManager();
 		loadedAll = false;
-        loadedFirst = false;
+        for(int i = 0; i < fileNames.length; i++){
+            assets.load(fileNames[i], Model.class);
+        }
 
-        assets.load(fileNames[0], Model.class);
-
+        instances = new Array<>();
 
         // Create an environment with lights
         environment = new Environment();
@@ -105,7 +113,7 @@ public class GameScreen extends ScreenAdapter {
 
         DirectionalLight dirLight1 = new DirectionalLight();
         dirLight1.setDirection(.5f, -.4f, .5f);
-        dirLight1.setColor(setIntensity(Color.ORANGE, .6f));
+        dirLight1.setColor(setIntensity(Color.ORANGE, 3.6f));
         environment.add(dirLight1);
 
         DirectionalLight dirLight2 = new DirectionalLight();
@@ -171,24 +179,25 @@ public class GameScreen extends ScreenAdapter {
             Gdx.app.exit();
         }
 
-        if(!loadedFirst && assets.update()) {	// advance loading
-            loadedFirst = true;
-            model = assets.get(fileNames[0], Model.class);
-            instance = new ModelInstance(model);
-            // start loading rest of assets
-            for(int i = 1; i < fileNames.length; i++){
-                assets.load(fileNames[i], Model.class);
-            }
-        }
-		if(!loadedAll) {
-            if( assets.update()) {    // advance loading
+        if(!loadedAll) {
+            if(assets.update()) {    // advance loading
                 loadedAll = true;
-                System.out.println("Loading complete");
+                Model model = assets.get(fileNames[1], Model.class);
+                instance = new ModelInstance(model, 0,0, 0);
+                instances.add(instance);
+                Model model2 = assets.get(fileNames[0], Model.class);
+                instance2 = new ModelInstance(model2, 0, 0, 0);
+                instances.add(instance2);
+            } else {
+                WgScreenUtils.clear(Color.BLACK,true);
+                batch.begin();
+                font.draw(batch, "Loading models...", 100, 100);
+                batch.end();
             }
-		}
+            return;
+        }
+        // if we arrive here, all assets are loaded
 
-//		if(loadedFirst)
-//			instance.transform.rotate(Vector3.Y, 15f*delta);
 
         controller.update(delta);
 
@@ -198,22 +207,13 @@ public class GameScreen extends ScreenAdapter {
 
 
 		modelBatch.begin(cam);
-
-		if(loadedFirst)
-			modelBatch.render(instance, environment);
+		modelBatch.render(instance, environment);
+        modelBatch.render(instance2, environment);
 
 		modelBatch.end();
 
-        if(loadedAll)
-		    stage.act();
+	    stage.act();
 		stage.draw();
-
-		if(!loadedAll) {
-			batch.begin();
-			font.draw(batch, "Loading models from file...", 100, 100);
-			batch.end();
-		}
-
 	}
 
 	@Override
