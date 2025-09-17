@@ -36,6 +36,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.monstrous.dungeon.render.SceneManager;
 import com.monstrous.gdx.webgpu.assets.WgAssetManager;
 import com.monstrous.gdx.webgpu.graphics.g2d.WgBitmapFont;
 import com.monstrous.gdx.webgpu.graphics.g2d.WgSpriteBatch;
@@ -44,7 +45,6 @@ import com.monstrous.gdx.webgpu.graphics.utils.WgScreenUtils;
 import com.monstrous.gdx.webgpu.scene2d.WgSkin;
 import com.monstrous.gdx.webgpu.scene2d.WgStage;
 
-/** Test model loading via asset manager for OBJ, G3DJ and G3DB formats */
 
 
 public class GameScreen extends ScreenAdapter {
@@ -59,33 +59,30 @@ public class GameScreen extends ScreenAdapter {
 
 	};
 
-    Color fogColor = Color.BLACK;
+    Main game;
+    SceneManager sceneManager;
 
-	WgModelBatch modelBatch;
+
 	PerspectiveCamera cam;
     CamController controller;
-	Model model;
-    private Array<ModelInstance> instances;
-//	ModelInstance RoomInstance;
-//    ModelInstance CharacterInstance;
 	AssetManager assets;
 	ScreenViewport viewport;
 	WgStage stage;
 	WgSkin skin;
-	boolean loadedFirst;
     boolean loadedAll;
 	WgSpriteBatch batch;
 	WgBitmapFont font;
-    Environment environment;
-    ModelInstance instance, instance2;
 
+    public GameScreen(Main game) {
+        this.game = game;
+    }
 
-	// application
+    // application
 	public void show () {
+        sceneManager = new SceneManager();
 		batch = new WgSpriteBatch();
 		font = new WgBitmapFont();
 
-		modelBatch = new WgModelBatch();
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.position.set(0, 4, 4);
 		cam.lookAt(0,4,0);
@@ -101,33 +98,6 @@ public class GameScreen extends ScreenAdapter {
         for(int i = 0; i < fileNames.length; i++){
             assets.load(fileNames[i], Model.class);
         }
-
-        instances = new Array<>();
-
-        // Create an environment with lights
-        environment = new Environment();
-
-        float ambientLevel = 0.02f;
-        ColorAttribute ambient =  ColorAttribute.createAmbientLight(ambientLevel, ambientLevel, ambientLevel, 1f);
-        environment.set(ambient);
-
-        DirectionalLight dirLight1 = new DirectionalLight();
-        dirLight1.setDirection(.5f, -.4f, .5f);
-        dirLight1.setColor(setIntensity(Color.ORANGE, 3.6f));
-        environment.add(dirLight1);
-
-        DirectionalLight dirLight2 = new DirectionalLight();
-        dirLight2.setDirection(-.5f, .4f, -.5f);
-        dirLight2.setColor(setIntensity(Color.PURPLE, 0.3f));
-        environment.add(dirLight2);
-
-        PointLight pointLight2 = new PointLight();
-        pointLight2.setPosition(1f, 1f, 1f);
-        pointLight2.setColor(Color.RED);
-        pointLight2.setIntensity(20f);
-        environment.add(pointLight2);
-
-        environment.set(new ColorAttribute(ColorAttribute.Fog,fogColor));
 
 		controller = new CamController(cam);
 		Gdx.input.setInputProcessor(controller);
@@ -162,15 +132,6 @@ public class GameScreen extends ScreenAdapter {
 
 	}
 
-    private final Color tmpColor = new Color();
-
-    Color setIntensity(Color color, float intensity){
-        tmpColor.set(color);
-        tmpColor.r *= intensity;
-        tmpColor.g *= intensity;
-        tmpColor.b *= intensity;
-        return tmpColor;
-    }
 
     boolean startLoading = false;
 
@@ -183,11 +144,11 @@ public class GameScreen extends ScreenAdapter {
             if(assets.update()) {    // advance loading
                 loadedAll = true;
                 Model model = assets.get(fileNames[1], Model.class);
-                instance = new ModelInstance(model, 0,0, 0);
-                instances.add(instance);
+                ModelInstance instance = new ModelInstance(model, 0,0, 0);
+                sceneManager.add(instance);
                 Model model2 = assets.get(fileNames[0], Model.class);
-                instance2 = new ModelInstance(model2, 0, 0, 0);
-                instances.add(instance2);
+                ModelInstance instance2 = new ModelInstance(model2, 0, 0, 0);
+                sceneManager.add(instance2);
             } else {
                 WgScreenUtils.clear(Color.BLACK,true);
                 batch.begin();
@@ -201,16 +162,7 @@ public class GameScreen extends ScreenAdapter {
 
         controller.update(delta);
 
-
-		WgScreenUtils.clear(Color.BLACK,true);
-
-
-
-		modelBatch.begin(cam);
-		modelBatch.render(instance, environment);
-        modelBatch.render(instance2, environment);
-
-		modelBatch.end();
+        sceneManager.render(cam);
 
 	    stage.act();
 		stage.draw();
@@ -222,17 +174,16 @@ public class GameScreen extends ScreenAdapter {
 		cam.viewportHeight = height;
 		cam.update(true);
         stage.getViewport().update(width, height, true);
-
 	}
 
 	@Override
 	public void dispose () {
-		modelBatch.dispose();
 		skin.dispose();
 		stage.dispose();
 		assets.dispose();
 		batch.dispose();
 		font.dispose();
+        sceneManager.dispose();
 	}
 
 
