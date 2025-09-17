@@ -361,8 +361,8 @@ public class GameObject {
 
         if(accuracy < rnd  ){
             if(hasFocus || other.hasFocus ) {
-//                Sounds.swoosh();
-//                MessageBox.addLine(type.name + " misses.");
+                Sounds.swoosh();
+                MessageBox.addLine(type.name + " misses.");
             }
         }
         else {
@@ -375,19 +375,19 @@ public class GameObject {
             hp += Math.min(stats.experience /20, 20);     // experience bonus
             System.out.println("attack hp "+hp+" vs protection "+(other.stats.armourItem == null? 0 : other.stats.armourItem.protection));
 
-//            if(hasFocus || other.hasFocus )
-////                Sounds.fight();
+            if(hasFocus || other.hasFocus )
+                Sounds.fight();
 
             if (other.stats.armourItem != null && other.stats.armourItem.protection > hp) {
-//                MessageBox.addLine("The " + other.type.name + " blocks the attack");
-//                if (hp > other.stats.armourItem.protection/2) {
-//                    other.stats.armourItem.protection--;        // armour takes damage
-//                    MessageBox.addLine("The armour takes damage.");
-//                }
-//                if(stats.weaponItem != null){
-//                    MessageBox.addLine("The weapon takes damage.");
-//                    stats.weaponItem.accuracy = Math.max(0, stats.weaponItem.accuracy-1);
-//                }
+                MessageBox.addLine("The " + other.type.name + " blocks the attack");
+                if (hp > other.stats.armourItem.protection/2) {
+                    other.stats.armourItem.protection--;        // armour takes damage
+                    MessageBox.addLine("The armour takes damage.");
+                }
+                if(stats.weaponItem != null){
+                    MessageBox.addLine("The weapon takes damage.");
+                    stats.weaponItem.accuracy = Math.max(0, stats.weaponItem.accuracy-1);
+                }
             } else {
                 if (other.stats.armourItem != null)
                     hp-= other.stats.armourItem.protection;     // armour reduces the attack force
@@ -400,9 +400,9 @@ public class GameObject {
                         other.stats.hitPoints = Math.max(2, other.stats.hitPoints - hp);        // avoid one-hit kills
 
                     // with increased awareness player is informed of all events
-//                    if (type.isPlayer || other.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
-//                        MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
-//                    }
+                    if (type.isPlayer || other.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+                        MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
+                    }
                 }
             }
         }
@@ -413,8 +413,8 @@ public class GameObject {
 
     // something was thrown at the target
     public void hits(World world, DungeonScenes scenes, GameObject thrower, GameObject target){
-        //if(hasFocus || target.hasFocus )
-            //Sounds.fight();
+        if(hasFocus || target.hasFocus )
+            Sounds.fight();
 
         int hp = 1;
 

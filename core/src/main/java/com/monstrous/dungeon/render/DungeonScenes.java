@@ -209,7 +209,7 @@ public class DungeonScenes  {
         }
     }
 
-    // The next two methods should be the only place where we convert logical x,y to a transform by applying SCALE
+    // The next few methods should be the only place where we convert logical x,y to a transform by applying SCALE
     //
     private void setTransform(Matrix4 transform, int x, int y, float z, Direction dir){
         transform.setToRotation(Vector3.Y, 180-dir.ordinal() * 90);
@@ -220,7 +220,6 @@ public class DungeonScenes  {
         transform.setToRotation(Vector3.Y, 180-dir.ordinal() * 90);
         transform.setTranslation(SCALE*x, z, -SCALE*y);
     }
-
 
     // leave orientation as it is
     private void setTransform(Matrix4 transform, int x, int y, float z){
