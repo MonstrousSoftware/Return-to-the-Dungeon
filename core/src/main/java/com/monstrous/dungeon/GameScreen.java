@@ -131,55 +131,49 @@ public class GameScreen extends ScreenAdapter {
     // this is not generic
     private void setLighting(Environment environment){
 
-        float ambientLevel = 0.02f;
+        float ambientLevel = 0.01f;
         ColorAttribute ambient =  ColorAttribute.createAmbientLight(ambientLevel, ambientLevel, ambientLevel, 1f);
- //       environment.set(ambient);
+        environment.set(ambient);
 
-//        DirectionalLight dirLight1 = new DirectionalLight();
-//        dirLight1.setDirection(-.5f, -.4f, .5f);
-//        dirLight1.setColor(setIntensity(Color.ORANGE, .6f));
-//        environment.add(dirLight1);
+        DirectionalLight dirLight1 = new DirectionalLight();
+        dirLight1.setDirection(-.5f, -.4f, .5f);
+        dirLight1.setColor(setIntensity(Color.ORANGE, .6f));
+        environment.add(dirLight1);
 
-//        DirectionalLight dirLight2 = new DirectionalLight();
-//        dirLight2.setDirection(-.5f, .4f, -.5f);
-//        dirLight2.setColor(setIntensity(Color.PURPLE, 0.3f));
-//        environment.add(dirLight2);
+        DirectionalLight dirLight2 = new DirectionalLight();
+        dirLight2.setDirection(-.5f, .4f, -.5f);
+        dirLight2.setColor(setIntensity(Color.PURPLE, 0.3f));
+        environment.add(dirLight2);
+
+        DirectionalLight dirLight3 = new DirectionalLight();
+        dirLight3.setDirection(.5f, -.4f, .3f);
+        dirLight3.setColor(setIntensity(Color.RED, 0.8f));
+        environment.add(dirLight3);
+
+
+//        DirectionalLight sun = new DirectionalLight();
+//        sun.setColor(setIntensity(Color.ORANGE, 0.1f));
+//        sun.setDirection( -.5f, -.5f, -.0f);
 //
-//        DirectionalLight dirLight3 = new DirectionalLight();
-//        dirLight3.setDirection(.5f, -.4f, .3f);
-//        dirLight3.setColor(setIntensity(Color.RED, 0.8f));
-//        environment.add(dirLight3);
+//
+//        // Create an outdoor environment map
+//        WgCubemap envMap = IBLGenerator.createOutdoor(sun, 64);
+//
+//        // Diffuse cube map (irradiance map)
+//        //
+//        WgCubemap irradianceMap = IBLGenerator.buildIrradianceMap(envMap, 16);
+//
+//        // Specular cube map (radiance map)
+//        //
+//        WgCubemap radianceMap = IBLGenerator.buildRadianceMap(envMap, 128);
+//
+//        // use cube map as a sky box
+//        //skyBox = new SkyBox(radianceMap);
+//
+//
+//        environment.set( WgCubemapAttribute.createDiffuseCubeMap(irradianceMap));   // add irradiance map
+//        environment.set( WgCubemapAttribute.createSpecularCubeMap(radianceMap));    // add radiance map
 
-
-        DirectionalLight sun = new DirectionalLight();
-        sun.setColor(setIntensity(Color.ORANGE, 0.1f));
-        sun.setDirection( -.5f, -.5f, -.0f);
-
-
-        // Create an outdoor environment map
-        WgCubemap envMap = IBLGenerator.createOutdoor(sun, 64);
-
-        // Diffuse cube map (irradiance map)
-        //
-        WgCubemap irradianceMap = IBLGenerator.buildIrradianceMap(envMap, 16);
-
-        // Specular cube map (radiance map)
-        //
-        WgCubemap radianceMap = IBLGenerator.buildRadianceMap(envMap, 128);
-
-        // use cube map as a sky box
-        //skyBox = new SkyBox(radianceMap);
-
-
-        environment.set( WgCubemapAttribute.createDiffuseCubeMap(irradianceMap));   // add irradiance map
-        environment.set( WgCubemapAttribute.createSpecularCubeMap(radianceMap));    // add radiance map
-
-
-//        PointLight pointLight2 = new PointLight();
-//        pointLight2.setPosition(1f, 1f, 1f);
-//        pointLight2.setColor(Color.RED);
-//        pointLight2.setIntensity(20f);
-//        environment.add(pointLight2);
 
         environment.set(new ColorAttribute(ColorAttribute.Fog, sceneManager.fogColor));
     }
@@ -250,6 +244,9 @@ public class GameScreen extends ScreenAdapter {
         }
 
         focalActor.scene.transform.getTranslation(focus);
+
+        if(!game.world.gameOver)
+            game.world.secondsElapsed += delta;
 
         // update animations
         game.world.enemies.animate(delta);

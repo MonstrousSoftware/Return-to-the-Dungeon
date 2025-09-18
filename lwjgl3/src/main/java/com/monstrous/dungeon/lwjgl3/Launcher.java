@@ -19,6 +19,7 @@ public class Launcher {
         config.setWindowedMode(1200, 800);
         config.enableGPUtiming = false;
         config.useVsync(true);
+        config.samples = 1;
         config.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
         new WgDesktopApplication(new Main(), config);
     }
