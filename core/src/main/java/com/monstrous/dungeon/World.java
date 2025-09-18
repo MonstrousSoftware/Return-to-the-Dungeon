@@ -45,6 +45,7 @@ public class World {
         GameObjectTypes gameObjectTypes = new GameObjectTypes();
         levelDataArray = new Array<>();
         create();
+        MessageBox.addLine("Welcome traveller");
     }
 
     private void create(){

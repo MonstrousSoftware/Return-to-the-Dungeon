@@ -2,12 +2,21 @@ package com.monstrous.dungeon.render;
 
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.monstrous.dungeon.populus.GameObjectType;
 import com.monstrous.dungeon.populus.GameObjectTypes;
+import com.monstrous.gdx.webgpu.graphics.WgTexture;
+
+import static com.monstrous.dungeon.populus.GameObjectTypes.types;
 
 
 /** Class to load Model per game object type */
 public class GameObjectScenes {
+    public static final int ICON_SIZE = 64;
+
     final static String[] fileNames = {
             "characters/Rogue_Hooded.glb",
             "characters/Skeleton_Warrior.glb",
@@ -86,9 +95,25 @@ public class GameObjectScenes {
         GameObjectTypes.bottle_C_green.sceneAsset = assets.get(fileNames[index++], Model.class);
         GameObjectTypes.bigSword.sceneAsset = assets.get(fileNames[index++], Model.class);
 
+        addIcons();
     }
 
 
+    // generate icons for each type
+    private void addIcons(){
+
+//        ShowCase showCase = new ShowCase();
+//        emptyIcon = showCase.makeIcon(null, ICON_SIZE, ICON_SIZE, false);
+        for(GameObjectType type : types ){
+            Pixmap pixmap = new Pixmap(ICON_SIZE, ICON_SIZE, Pixmap.Format.RGBA8888);
+            pixmap.setColor(Color.BLUE);
+            pixmap.fill();
+            WgTexture texture = new WgTexture(pixmap);
+            Sprite icon = new Sprite(texture);
+            //Sprite icon = showCase.makeIcon(type.sceneAsset, ICON_SIZE, ICON_SIZE, type.isEnemy || type.isPlayer || type == GameObjectTypes.bigSword);
+            type.icon = icon;
+        }
+    }
 
 
 

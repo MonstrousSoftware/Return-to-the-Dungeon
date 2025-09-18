@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.monstrous.dungeon.gui.GUI;
 import com.monstrous.dungeon.input.CamController;
 import com.monstrous.dungeon.input.KeyController;
 import com.monstrous.dungeon.input.OrbitCameraController;
@@ -43,15 +44,15 @@ public class GameScreen extends ScreenAdapter {
 
     Main game;
     SceneManager sceneManager;
-
+    GUI gui;
 
 	PerspectiveCamera cam;
     OrbitCameraController camController;
     KeyController keyController;
 	AssetManager assets;
 	ScreenViewport viewport;
-	WgStage stage;
-	WgSkin skin;
+	//WgStage stage;
+	//WgSkin skin;
     boolean loadedAll;
 	WgSpriteBatch batch;
 	WgBitmapFont font;
@@ -70,6 +71,7 @@ public class GameScreen extends ScreenAdapter {
         gameObjectScenes = new GameObjectScenes();
 		batch = new WgSpriteBatch();
 		font = new WgBitmapFont();
+        gui = new GUI( game.world );
 
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.position.set(0, 4, 4);
@@ -99,8 +101,8 @@ public class GameScreen extends ScreenAdapter {
 
         // Add some GUI
 		//
-		viewport = new ScreenViewport();
-		stage = new WgStage(viewport);
+//		viewport = new ScreenViewport();
+//		stage = new WgStage(viewport);
 		//stage.setDebugAll(true);
 
         camController = new OrbitCameraController(cam);
@@ -108,20 +110,8 @@ public class GameScreen extends ScreenAdapter {
 		InputMultiplexer im = new InputMultiplexer();
 		Gdx.input.setInputProcessor(im);
         im.addProcessor(keyController);
-		im.addProcessor(stage);
+		im.addProcessor(gui.stage);
 		im.addProcessor(camController);
-
-		skin = new WgSkin(Gdx.files.internal("ui/uiskin.json"));
-
-		Table screenTable = new Table();
-		screenTable.setFillParent(true);
-		Table controls = new Table();
-		controls.add(new Label("File: ", skin));
-		controls.add(new Label(fileNames[0], skin)).row();
-		screenTable.add(controls).left().top().expand();
-
-
-		stage.addActor(screenTable);
 
 	}
 
@@ -182,15 +172,17 @@ public class GameScreen extends ScreenAdapter {
 
         focalActor.scene.transform.getTranslation(focus);
 
+        // update animations
+        game.world.enemies.animate(delta);
+        game.world.rogue.animationController.update(delta);
+
         mat.setToRotation(Vector3.Y, 180-focalActor.direction.ordinal() * 90);
         playerDirection.set(Vector3.Z).mul(mat);
-
         camController.update(focus, playerDirection);
 
         sceneManager.render(cam);
 
-	    stage.act();
-		stage.draw();
+        gui.render(delta);
 	}
 
 	@Override
@@ -198,13 +190,13 @@ public class GameScreen extends ScreenAdapter {
 		cam.viewportWidth = width;
 		cam.viewportHeight = height;
 		cam.update(true);
-        stage.getViewport().update(width, height, true);
+        gui.resize(width, height);
 	}
 
 	@Override
 	public void dispose () {
-		skin.dispose();
-		stage.dispose();
+
+		gui.dispose();
 		assets.dispose();
 		batch.dispose();
 		font.dispose();

@@ -1,0 +1,63 @@
+{
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	Metamorphous-Regular14: {
+		file: Metamorphous-Regular(2).fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
+	}
+	Metamorphous-Regular16: {
+		file: Metamorphous-Regular(1).fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
+	}
+	Metamorphous-Regular24: {
+		file: Metamorphous-Regular.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
+	}
+}
+com.badlogic.gdx.graphics.Color: {
+	WHITE: {
+		r: 1
+		g: 1
+		b: 1
+		a: 1
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	slot: {
+		up: inventory-slot-16x16
+		down: inventory-slot-16x16
+		over: inv-slot-highlight-16x16
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: Metamorphous-Regular24
+		fontColor: WHITE
+	}
+	small: {
+		font: Metamorphous-Regular16
+		fontColor: WHITE
+	}
+	smaller: {
+		font: Metamorphous-Regular14
+		fontColor: WHITE
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
+	default: {
+		label: default
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+	default: {
+		background: window
+		titleFont: Metamorphous-Regular16
+		titleFontColor: WHITE
+	}
+}
+}

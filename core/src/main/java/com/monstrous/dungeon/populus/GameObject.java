@@ -2,6 +2,7 @@ package com.monstrous.dungeon.populus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.MathUtils;
 import com.monstrous.dungeon.MessageBox;
 import com.monstrous.dungeon.Sounds;
@@ -18,6 +19,7 @@ public class GameObject {
     public float z;       // above/below ground level, e.g. when walking stairs
     public Direction direction;
     public ModelInstance scene;
+    public AnimationController animationController; // null if not animated
     public CharacterStats stats;        // only for rogue and enemies
     public int quantity;                // e.g. amount of gold for a gold object
     public GameObject attackedBy;       // normally null
@@ -141,11 +143,7 @@ public class GameObject {
         TileType from = world.map.getGrid(x, y);
         TileType cell = world.map.getGrid(tx, ty);
         if (!TileType.walkable(cell, from)) {
-            // todo
-//            if(scene != null) {
-//                scene.animationController.setAnimation(null);   // remove previous animation
-//                scene.animationController.setAnimation("Idle", 1);
-//            }
+            startAnimation("Idle", -1);
             return;     // don't move to non walkable cell
         }
 
@@ -220,11 +218,8 @@ public class GameObject {
                 scenes.addScene(this);
             }
         }
-//        if(scene != null && !pickingUpAnimation) {
-//            scene.animationController.setAnimation(null);   // remove previous animation
-//            scene.animationController.setAnimation("Walking_A", 1);
-//        }
-
+        if(!pickingUpAnimation)
+            startAnimation("Walking_A", 1);
     }
 
     // this character will steal all victim's gold
@@ -241,15 +236,19 @@ public class GameObject {
         }
     }
 
+    public void startAnimation(String name, int loopCount){
+        if (animationController != null) {
+            animationController.setAnimation(null);   // remove previous animation
+            animationController.setAnimation(name, loopCount);
+        }
+    }
+
 
     private void pickUp(World world, DungeonScenes scenes, GameObject item) {
         Gdx.app.log("Pickup", item.type.name);
 
         if (stats.inventory.addItem(item)) {  // if there is room in the inventory
-            if (scene != null) {
-//                scene.animationController.setAnimation(null);   // remove previous animation
-//                scene.animationController.setAnimation("PickUp", 1);
-            }
+            startAnimation("PickUp", 1);
 
             String name = type.name;
             if (type.isPlayer)
@@ -275,9 +274,7 @@ public class GameObject {
             if (item.type == GameObjectTypes.bigSword) {
                 MessageBox.addLine("This is what you came for!");
                 MessageBox.addLine("Now return it to the start.");
-//                if(scene!= null) {
-//                    scene.animationController.setAnimation(null);   // remove previous animation
-//                    scene.animationController.setAnimation("Cheer", 3);
+                startAnimation("Cheer", 3);
             }
         }
     }
@@ -297,25 +294,25 @@ public class GameObject {
                 stats.inventory.removeItem(item);
                 // put old one back in inventory
                 if (prev != null) {
-//                    if(scene !=null)
-//                        scenes.detachModel(scene, "handslot.l", prev);
+                    if(scene !=null)
+                        scenes.detachModel(this, "handslot.l", prev);
                     stats.inventory.addItem(prev);
                 }
-//                if(scene!=null)
-//                    scenes.attachModel(scene, "handslot.l",  item);
+                if(scene!=null)
+                    scenes.attachModel(this, "handslot.l",  item);
             }
         } else if(item.type.isWeapon){
             GameObject prev = stats.weaponItem;
             if(prev == null || item.damage > prev.damage) {
                 stats.weaponItem = item;
                 stats.inventory.removeItem(item);
-//                if (prev != null) {
-//                    if(scene !=null)
-//                        scenes.detachModel(scene, "handslot.r", prev);
-//                    stats.inventory.addItem(prev);
-//                }
-//                if(scene !=null)
-//                    scenes.attachModel(scene, "handslot.r",  item);
+                if (prev != null) {
+                    if(scene !=null)
+                        scenes.detachModel(this, "handslot.r", prev);
+                    stats.inventory.addItem(prev);
+                }
+                if(scene !=null)
+                    scenes.attachModel(this, "handslot.r",  item);
             }
         }
     }
@@ -338,11 +335,7 @@ public class GameObject {
             System.out.println("enemy "+enemy.type.name+ " xp:" + enemy.stats.experience + " hp:" + enemy.stats.hitPoints + " wp:" + (enemy.stats.weaponItem==null?"none":enemy.stats.weaponItem.type.name) +
                 " armour:" + (enemy.stats.armourItem == null?"none":enemy.stats.armourItem.type.name));
         }
-
-        if(scene != null){
-//            scene.animationController.setAnimation(null);   // remove previous animation
-//            scene.animationController.setAnimation("Unarmed_Melee_Attack_Punch_A", 1);
-        }
+        startAnimation("Unarmed_Melee_Attack_Punch_A", 1);
 
         other.attackedBy = this;
 

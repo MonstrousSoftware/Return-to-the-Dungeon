@@ -53,7 +53,6 @@ public class KeyController extends InputAdapter {
 
     // used for key repeat
     public void update(float deltaTime){
-        setScreenRotation(cam.combined);
         if(keyDown == 0)
             return;
         downTime -= deltaTime;
@@ -119,12 +118,10 @@ public class KeyController extends InputAdapter {
 
             switch (keycode) {
                 case Input.Keys.UP:
-                    //tryMoveForwardRogue();
                     tryMoveRogue( 0);
                     done = true;
                     break;
                 case Input.Keys.DOWN:
-                    //reverseRogue();
                     tryMoveRogue( 2);
                     done = true;
                     break;
@@ -140,10 +137,7 @@ public class KeyController extends InputAdapter {
 
 
                 case Input.Keys.SPACE:
-//                    if( !world.rogue.scene.animationController.current.animation.id.contentEquals("Idle")){
-//                        world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
-//                        world.rogue.scene.animationController.setAnimation("Idle", -1);
-//                    }
+                    world.rogue.startAnimation("Sit_Floor_Down", 1);
                     done = true;
                     break;        // do nothing
             }
@@ -217,8 +211,7 @@ public class KeyController extends InputAdapter {
         if (world.rogue.stats.hitPoints <= 0) {
             MessageBox.addLine("You are dead. Press R to restart.");
             world.gameOver = true;
-//            world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
-//            world.rogue.scene.animationController.setAnimation("Death_A", 1);
+            world.rogue.startAnimation("Death_A", 1);
         }
     }
 
@@ -236,8 +229,7 @@ public class KeyController extends InputAdapter {
         else if(world.rogue.stats.food == 0){
             Sounds.stomachRumble();
             MessageBox.addLine("You're so faint you can't move.");
-//            world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
-//            world.rogue.scene.animationController.setAnimation("Lie_Idle", -1);
+            world.rogue.startAnimation("Lie_Idle", -1);
             frozenTimer = 5;
             world.rogue.stats.food = CharacterStats.REPLENISH_FOOD;
         }
@@ -382,8 +374,7 @@ public class KeyController extends InputAdapter {
 
             scenes.turnObject(world.rogue, Direction.SOUTH, world.rogue.x, world.rogue.y);    // turn towards the camera
 
-//            world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
-//            world.rogue.scene.animationController.setAnimation("Cheer", 20 );
+            world.rogue.startAnimation("Cheer", 20 );
             world.gameOver = true;
             world.gameCompleted = true;
 //            world.enemies.hideAll(scenes);  // hide any leftover enemies
@@ -506,9 +497,7 @@ public class KeyController extends InputAdapter {
 
     private boolean throwIt(int slotNr, int dx, int dy, Direction dir){
         System.out.println("Throw "+slotNr+" to dx:"+dx+", dy:"+dy);
-
-//        world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
-//        world.rogue.scene.animationController.setAnimation("Throw", 1);
+        world.rogue.startAnimation("Throw", 1);
 
         Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
         if(slot.isEmpty())
@@ -560,18 +549,18 @@ public class KeyController extends InputAdapter {
             world.rogue.stats.armourItem = slot.removeItem();
             if(prev != null) {
                 world.rogue.stats.inventory.addItem(prev);
-//                scenes.detachModel(world.rogue.scene, "handslot.l",  prev);
+                scenes.detachModel(world.rogue, "handslot.l",  prev);
             }
-//            scenes.attachModel(world.rogue.scene, "handslot.l",  world.rogue.stats.armourItem);
+            scenes.attachModel(world.rogue, "handslot.l",  world.rogue.stats.armourItem);
 
         } else if(slot.object.type.isWeapon){
             GameObject prev = world.rogue.stats.weaponItem;
             world.rogue.stats.weaponItem = slot.removeItem();
             if(prev != null) {
                 world.rogue.stats.inventory.addItem(prev);
-//                scenes.detachModel(world.rogue.scene, "handslot.r",  prev);
+                scenes.detachModel(world.rogue, "handslot.r",  prev);
             }
-//            scenes.attachModel(world.rogue.scene, "handslot.r",  world.rogue.stats.weaponItem);
+            scenes.attachModel(world.rogue, "handslot.r",  world.rogue.stats.weaponItem);
         }
 
     }

@@ -1,5 +1,6 @@
 package com.monstrous.dungeon.populus;
 
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.monstrous.dungeon.map.Direction;
@@ -159,6 +160,7 @@ public class Populator {
             GameObject enemy = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, enemy);
             enemy.stats = new CharacterStats();
+            //enemy.animationController = new AnimationController(enemy.scene);
             assert type != null;
             enemy.stats.experience = type.initXP * (1+MathUtils.random(levelNr*10));     // at lower levels, enemies get more experienced
             int goldAmount = MathUtils.random(0,5);

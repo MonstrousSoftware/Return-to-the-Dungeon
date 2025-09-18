@@ -25,7 +25,7 @@ public class OrbitCameraController extends InputAdapter {
         viewDirection = new Vector3(Vector3.Z);
     }
 
-    public void update ( Vector3 playerPosition, Vector3 inViewDirection ) {
+    public void update ( Vector3 playerPosition, Vector3 playerViewDirection ) {
 
         camera.position.set(playerPosition);
         //Vector3 viewDirection = new Vector3(Vector3.Z);

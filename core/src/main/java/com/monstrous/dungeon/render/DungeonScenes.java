@@ -8,13 +8,16 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.monstrous.dungeon.World;
 import com.monstrous.dungeon.map.*;
+import com.monstrous.dungeon.populus.CharacterStats;
 import com.monstrous.dungeon.populus.GameObject;
+import com.monstrous.dungeon.populus.GameObjectTypes;
 import com.monstrous.gdx.webgpu.graphics.g3d.WgModel;
 
 
@@ -362,17 +365,20 @@ public class DungeonScenes  {
 //        // how to handle enemies walking over gold etc.
 //    }
 //
+
+    /** add visual representation to game object, i.e. a ModelInstance plus animation controller */
     public void addScene(GameObject gameObject){
-        ModelInstance item = null;
-        if(gameObject.type.isPlayer)
-            item = new ModelInstance(gameObject.type.sceneAsset, "Scene", "Rig");
-        else
-            item = new ModelInstance(gameObject.type.sceneAsset);
-        setTransform(item.transform, gameObject.x, gameObject.y, gameObject.z, gameObject.direction);
-        sceneManager.add(item);
-        gameObject.scene = item;
-//        if(gameObject.type.isEnemy)
-//            gameObject.scene.animationController.setAnimation("Idle", -1);
+
+        if(gameObject.type.isPlayer || gameObject.type.isEnemy) {
+            gameObject.scene = new ModelInstance(gameObject.type.sceneAsset, "Scene", "Rig");
+            gameObject.animationController = new AnimationController(gameObject.scene);
+            gameObject.animationController.setAnimation("Idle", -1);
+        }
+        else {
+            gameObject.scene = new ModelInstance(gameObject.type.sceneAsset);
+        }
+        setTransform(gameObject.scene.transform, gameObject.x, gameObject.y, gameObject.z, gameObject.direction);
+        sceneManager.add(gameObject.scene);
     }
 
 
@@ -384,8 +390,8 @@ public class DungeonScenes  {
     public void createRogueModel(World world){
         GameObject rogue = world.rogue;
         addScene(rogue);
-        //adaptModel(rogue.scene, rogue.stats);
-        //rogue.scene.animationController.setAnimation("Idle", -1);
+        adaptModel(rogue, rogue.stats);
+        rogue.startAnimation("Idle", -1);
 
 
 //        String armature = "Rig";
@@ -397,48 +403,48 @@ public class DungeonScenes  {
 //            }
 //        }
     }
-//
-//    public void attachModel(Scene character, String nodeName, GameObject item){
-//        if(item == null || item.scene == null)
-//            return;
-//        for(Node node : character.modelInstance.nodes){
-//            attachToNode( node, nodeName, item.scene);
-//        }
-//    }
-//
-//    // recursive method to attach weapons
-//    private void attachToNode( Node node, String nodeName, Scene weapon ){
-//
-//        if(node.id.contentEquals(nodeName)){
-//            node.addChild(weapon.modelInstance.nodes.first());
-//        }
-//        else {
-//            for (Node n : node.getChildren()) {
-//                attachToNode( n, nodeName, weapon);
-//            }
-//        }
-//    }
-//    public void detachModel(Scene character, String nodeName, GameObject item){
-//        if(item == null || item.scene == null)
-//            return;
-//        for(Node node : character.modelInstance.nodes){
-//            detachFromNode( node, nodeName, item.scene);
-//        }
-//    }
-//
-//    // recursive method to attach weapons
-//    private void detachFromNode( Node node, String nodeName, Scene weapon ){
-//
-//        if(node.id.contentEquals(nodeName)){
-//            node.removeChild(weapon.modelInstance.nodes.first());
-//        }
-//        else {
-//            for (Node n : node.getChildren()) {
-//                detachFromNode( n, nodeName, weapon);
-//            }
-//        }
-//    }
-//
+
+    public void attachModel(GameObject character, String nodeName, GameObject item){
+        if(item == null || item.scene == null)
+            return;
+        for(Node node : character.scene.nodes){
+            attachToNode( node, nodeName, item.scene);
+        }
+    }
+
+    // recursive method to attach weapons
+    private void attachToNode( Node node, String nodeName, ModelInstance weapon ){
+
+        if(node.id.contentEquals(nodeName)){
+            node.addChild(weapon.nodes.first());
+        }
+        else {
+            for (Node n : node.getChildren()) {
+                attachToNode( n, nodeName, weapon);
+            }
+        }
+    }
+    public void detachModel(GameObject character, String nodeName, GameObject item){
+        if(item == null || item.scene == null)
+            return;
+        for(Node node : character.scene.nodes){
+            detachFromNode( node, nodeName, item.scene);
+        }
+    }
+
+    // recursive method to attach weapons
+    private void detachFromNode( Node node, String nodeName, ModelInstance weapon ){
+
+        if(node.id.contentEquals(nodeName)){
+            node.removeChild(weapon.nodes.first());
+        }
+        else {
+            for (Node n : node.getChildren()) {
+                detachFromNode( n, nodeName, weapon);
+            }
+        }
+    }
+
     // mark the room or corridor segment where Rogue is as 'uncovered'
     public void uncoverAreaInPlayerView(World world){
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
@@ -454,42 +460,42 @@ public class DungeonScenes  {
 
 
 
-//
-//    // obsolete
-//    public void adaptModel(Scene rogue, CharacterStats stats){
-//        ModelInstance instance = rogue.modelInstance;
-//        for(Node node : instance.nodes){
-//            //checkNode(1, node, stats.weaponItem);
-//            checkNode(1, node, null);
-//        }
-//
-//        attachModel(rogue, "handslot.l",  stats.armourItem);
-//        attachModel(rogue, "handslot.r",  stats.weaponItem);
-//    }
-//
-//    // recursive method to enable/disable weapons
-//    private void checkNode(int level, Node node, GameObject weapon ){
-//        //Gdx.app.log("Node", "level "+ level + " : "+node.id+ " nodeparts: "+node.parts.size);
-//        if(node.id.contentEquals("Knife"))
-//            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.knife));
-//        else if(node.id.contains("Knife_Offhand"))
-//            setNodeParts(node, false);
-//        else if(node.id.contains("Crossbow"))
-//            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.crossbow));
-//        else if(node.id.contains("Throwable"))
-//            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.explosive));
-//
-//        for(Node n : node.getChildren()){
-//            checkNode(level+1, n, weapon);
-//        }
-//    }
-//
-//    private void setNodeParts(Node node, boolean enabled){
-//        for(NodePart part : node.parts)
-//            part.enabled = enabled;
-//    }
-//
-//
+
+    // obsolete
+    public void adaptModel(GameObject character, CharacterStats stats){
+        ModelInstance instance = character.scene;
+        for(Node node : instance.nodes){
+            //checkNode(1, node, stats.weaponItem);
+            checkNode(1, node, null);
+        }
+
+        attachModel(character, "handslot.l",  stats.armourItem);
+        attachModel(character, "handslot.r",  stats.weaponItem);
+    }
+
+    // recursive method to enable/disable weapons
+    private void checkNode(int level, Node node, GameObject weapon ){
+        //Gdx.app.log("Node", "level "+ level + " : "+node.id+ " nodeparts: "+node.parts.size);
+        if(node.id.contentEquals("Knife"))
+            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.knife));
+        else if(node.id.contains("Knife_Offhand"))
+            setNodeParts(node, false);
+        else if(node.id.contains("Crossbow"))
+            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.crossbow));
+        else if(node.id.contains("Throwable"))
+            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.explosive));
+
+        for(Node n : node.getChildren()){
+            checkNode(level+1, n, weapon);
+        }
+    }
+
+    private void setNodeParts(Node node, boolean enabled){
+        for(NodePart part : node.parts)
+            part.enabled = enabled;
+    }
+
+
     public void turnObject(GameObject go, Direction dir, int x, int y ){
         go.direction = dir;
         if(go.scene != null)

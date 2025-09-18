@@ -43,6 +43,14 @@ public class Enemies {
         }
     }
 
+    public void animate(float delta) {
+        for(GameObject enemy : enemies)
+        {
+            if (enemy.animationController != null)
+                enemy.animationController.update(delta);
+        }
+    }
+
 //    public void hideAll(DungeonScenes scenes){
 //        for(GameObject enemy : enemies){
 //            if(enemy.scene != null)
