@@ -104,7 +104,7 @@ public class GameScreen extends ScreenAdapter {
 		//stage.setDebugAll(true);
 
         camController = new OrbitCameraController(cam);
-        keyController = new KeyController(game.world, dungeonScenes);
+        keyController = new KeyController(cam, game.world, dungeonScenes);
 		InputMultiplexer im = new InputMultiplexer();
 		Gdx.input.setInputProcessor(im);
         im.addProcessor(keyController);
@@ -168,7 +168,7 @@ public class GameScreen extends ScreenAdapter {
             game.world.isRebuilt = false;
 
             // refill scene manager
-            //sceneManager.clear();
+            sceneManager.clear();
 //            for(GameObject object: world.levelData.gameObjects.gameObjects)
 //                object.scene = null;
 
@@ -181,9 +181,6 @@ public class GameScreen extends ScreenAdapter {
         }
 
         focalActor.scene.transform.getTranslation(focus);
-//        cam.lookAt(focus);
-//        camPos.set(focus).add(8,0,0);
-//        cam.position.set(camPos);
 
         mat.setToRotation(Vector3.Y, 180-focalActor.direction.ordinal() * 90);
         playerDirection.set(Vector3.Z).mul(mat);

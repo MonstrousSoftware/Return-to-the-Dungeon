@@ -2,6 +2,9 @@ package com.monstrous.dungeon.input;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 import com.monstrous.dungeon.MessageBox;
 import com.monstrous.dungeon.Sounds;
 import com.monstrous.dungeon.World;
@@ -18,6 +21,7 @@ public class KeyController extends InputAdapter {
 
     private final World world;
     private final DungeonScenes scenes;
+    private final Camera cam;
     private boolean equipMode;  // after e
     private boolean dropMode;   // after d
     private boolean useMode;    // after u
@@ -31,10 +35,12 @@ public class KeyController extends InputAdapter {
     private int keyDown;
     private float downTime;
     private int turboTimer;     // counts down for duration of speed potion
+    private int screenRotation = 0; // 0 to 3 (in 90 degree increments), how screen is rotated with respect to "Up is North"
 
-    public KeyController(World world, DungeonScenes scenes) {
+    public KeyController(Camera cam, World world, DungeonScenes scenes) {
         this.world = world;
         this.scenes = scenes;
+        this.cam = cam;
         equipMode = false;
         dropMode = false;
         useMode = false;
@@ -43,11 +49,11 @@ public class KeyController extends InputAdapter {
         throwDirectionMode = false;
         regenTimer = 10;
         turboTimer = 0;
-
     }
 
     // used for key repeat
     public void update(float deltaTime){
+        setScreenRotation(cam.combined);
         if(keyDown == 0)
             return;
         downTime -= deltaTime;
@@ -56,6 +62,8 @@ public class KeyController extends InputAdapter {
             handleKey(keyDown); // simulate a key press
         }
     }
+
+
 
     @Override
     public boolean keyUp(int keycode) {
@@ -70,7 +78,23 @@ public class KeyController extends InputAdapter {
         return handleKey(keycode);
     }
 
+    Vector3 tmp = new Vector3();
+
+    /** determine quadrant of screen rotation from the camera matrix */
+    private void setScreenRotation(Matrix4 camMatrix){
+        tmp.set(Vector3.Z);
+        tmp.rot(camMatrix);
+        tmp.y = 0;
+        tmp.nor();
+        if(Math.abs(tmp.x) > Math.abs(tmp.z)){
+            screenRotation = tmp.x > 0 ? 1 : 3;
+        } else {
+            screenRotation = tmp.z > 0 ? 2 : 0;
+        }
+    }
+
     private boolean handleKey(int keycode){
+        setScreenRotation(cam.combined);
 
         if (world.gameOver) { // player is dead or has beaten the game
             return false;
@@ -94,30 +118,27 @@ public class KeyController extends InputAdapter {
             //
 
             switch (keycode) {
-                case Input.Keys.LEFT:
-                    tryMoveRogue(-1, 0, Direction.WEST);
-                    done = true;
-                    break;
-                case Input.Keys.RIGHT:
-                    tryMoveRogue(1, 0, Direction.EAST);
-                    done = true;
-                    break;
                 case Input.Keys.UP:
-                    tryMoveRogue(0, 1, Direction.NORTH);
+                    //tryMoveForwardRogue();
+                    tryMoveRogue( 0);
                     done = true;
                     break;
                 case Input.Keys.DOWN:
-                    tryMoveRogue(0, -1, Direction.SOUTH);
+                    //reverseRogue();
+                    tryMoveRogue( 2);
                     done = true;
                     break;
-                case Input.Keys.O:
-                    turnRogue(true);
+                case Input.Keys.LEFT:
+                    tryMoveRogue( 3);
                     done = true;
                     break;
-                case Input.Keys.P:
-                    turnRogue(false);
+                case Input.Keys.RIGHT:
+                    tryMoveRogue( 1);
                     done = true;
                     break;
+
+
+
                 case Input.Keys.SPACE:
 //                    if( !world.rogue.scene.animationController.current.animation.id.contentEquals("Idle")){
 //                        world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
@@ -286,7 +307,33 @@ public class KeyController extends InputAdapter {
         scenes.turnObject(world.rogue, Direction.values()[dir], world.rogue.x, world.rogue.y);    // turn towards moving direction
     }
 
-    private void tryMoveRogue(int dx, int dy, Direction dir){
+    /** 180 degree turn */
+    private void reverseRogue() {
+        int dir = world.rogue.direction.ordinal();
+        dir = (dir + 2) % 4;
+        scenes.turnObject(world.rogue, Direction.values()[dir], world.rogue.x, world.rogue.y);    // turn towards moving direction
+    }
+
+
+
+    private final int[] deltaX = {0, 1, 0, -1  };
+    private final int[] deltaY = {1, 0, -1, 0  };
+    private final Direction[] dirs = { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
+
+//    private void tryMoveForwardRogue(){
+//        Direction dir = world.rogue.direction;
+//        int dx = deltaX[dir.ordinal()];
+//        int dy = deltaY[dir.ordinal()];
+//        tryMoveRogue(dx, dy, dir);
+//    }
+
+    private void tryMoveRogue(int screenRelativeDirection){
+        int direction = (screenRelativeDirection + screenRotation) % 4;
+        int dx = deltaX[direction];
+        int dy = deltaY[direction];
+
+        Direction dir = dirs[direction];    // yeah, maybe enums are not so great....
+
         // if on bottom of stairs and moving forward, move down a level
         if(world.map.getGrid(world.rogue.x,world.rogue.y) == TileType.STAIRS_DOWN_DEEP &&
             dir == world.map.tileOrientation[world.rogue.y][world.rogue.x]){
