@@ -45,7 +45,7 @@ public class GameObjectType {
         this.isPlayer = false;
         this.isCountable = false;
         this.initXP = 1;
-        this.z = 1f;
+        this.z = 0f;
         this.isWeapon = false;
         this.isRangeWeapon = false;
         this.isArmour = false;

@@ -571,7 +571,7 @@ public class KeyController extends InputAdapter {
             return;
         GameObject item = slot.removeItem();
         MessageBox.addLine("You dropped "+item.type.name+".");
-//        scenes.dropObject(world.map, world.levelData.gameObjects, item, world.rogue.x, world.rogue.y);
+        scenes.dropObject(world.map, world.levelData.gameObjects, item, world.rogue.x, world.rogue.y);
     }
 
 

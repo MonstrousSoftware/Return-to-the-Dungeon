@@ -160,41 +160,49 @@ public class GameObjectTypes  {
         spellBookClosed = new GameObjectType("a purple Spellbook", false, true, 0, 2, 1, 1);
         //spellBookClosed.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed.gltf"));
         spellBookClosed.isSpellBook = true;
+        spellBookClosed.z = 1;
         types.add(spellBookClosed);
 
         spellBookOpen = new GameObjectType("a Spellbook (open)", false, true, 0, 0, 0, 0);
         //spellBookOpen.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open.gltf"));
         types.add(spellBookOpen);
+        spellBookOpen.z = 1;
         spellBookClosed.alternative = spellBookOpen;
 
         spellBookClosedB = new GameObjectType("a red Spellbook", false, true, 3, 99, 0, 1);
         //spellBookClosedB.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_B.gltf"));
         spellBookClosedB.isSpellBook = true;
+        spellBookClosedB.z = 1;
         types.add(spellBookClosedB);
 
         spellBookOpenB = new GameObjectType("a Spellbook (open)", false, true, 0, 0, 0, 0);
         //spellBookOpenB.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_B.gltf"));
         types.add(spellBookOpenB);
+        spellBookOpenB.z = 1;
         spellBookClosedB.alternative = spellBookOpenB;
 
         spellBookClosedC = new GameObjectType("a black Spellbook", false, true, 0, 99, 0, 2);
         //spellBookClosedC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_C.gltf"));
         spellBookClosedC.isSpellBook = true;
+        spellBookClosedC.z = 1;
         types.add(spellBookClosedC);
 
         spellBookOpenC = new GameObjectType("a Spellbook (open)", false, true, 0, 0, 0, 0);
         //spellBookOpenC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_C.gltf"));
         types.add(spellBookOpenC);
+        spellBookOpenC.z = 1;
         spellBookClosedC.alternative = spellBookOpenC;
 
         spellBookClosedD = new GameObjectType("a green Spellbook", false, true, 0, 99, 0, 1);
         //spellBookClosedD.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_D.gltf"));
         spellBookClosedD.isSpellBook = true;
+        spellBookClosedD.z = 1;
         types.add(spellBookClosedD);
 
         spellBookOpenD = new GameObjectType("a Spellbook (open)", false, true, 0, 0, 0, 0);
         //spellBookOpenD.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_D.gltf"));
         types.add(spellBookOpenD);
+        spellBookOpenD.z = 1;
         spellBookClosedD.alternative = spellBookOpenD;
 
         food = new GameObjectType("a plate of food", false, true, 0, 99, 2, 5);

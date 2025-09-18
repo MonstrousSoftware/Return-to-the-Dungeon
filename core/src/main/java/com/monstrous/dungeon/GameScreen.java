@@ -6,8 +6,12 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -59,6 +63,7 @@ public class GameScreen extends ScreenAdapter {
     DungeonScenes dungeonScenes;
     GameObjectScenes gameObjectScenes;
     private GameObject focalActor;    // who the camera is following, normally the Rogue
+    private TorchLights torchLights;
 
     public GameScreen(Main game) {
         this.game = game;
@@ -91,6 +96,8 @@ public class GameScreen extends ScreenAdapter {
         dungeonScenes.queueAssets(assets);
         gameObjectScenes.queueAssets(assets);
 
+        torchLights = new TorchLights(sceneManager.environment);
+        setLighting(sceneManager.environment);
 
 
 
@@ -114,6 +121,47 @@ public class GameScreen extends ScreenAdapter {
 		im.addProcessor(camController);
 
 	}
+
+    // this is not generic
+    private void setLighting(Environment environment){
+
+        float ambientLevel = 0.02f;
+        ColorAttribute ambient =  ColorAttribute.createAmbientLight(ambientLevel, ambientLevel, ambientLevel, 1f);
+        environment.set(ambient);
+
+        DirectionalLight dirLight1 = new DirectionalLight();
+        dirLight1.setDirection(-.5f, -.4f, .5f);
+        dirLight1.setColor(setIntensity(Color.ORANGE, .6f));
+        environment.add(dirLight1);
+
+        DirectionalLight dirLight2 = new DirectionalLight();
+        dirLight2.setDirection(-.5f, .4f, -.5f);
+        dirLight2.setColor(setIntensity(Color.PURPLE, 0.3f));
+        environment.add(dirLight2);
+
+        DirectionalLight dirLight3 = new DirectionalLight();
+        dirLight3.setDirection(.5f, -.4f, .3f);
+        dirLight3.setColor(setIntensity(Color.RED, 0.8f));
+        environment.add(dirLight3);
+
+//        PointLight pointLight2 = new PointLight();
+//        pointLight2.setPosition(1f, 1f, 1f);
+//        pointLight2.setColor(Color.RED);
+//        pointLight2.setIntensity(20f);
+//        environment.add(pointLight2);
+
+        environment.set(new ColorAttribute(ColorAttribute.Fog, sceneManager.fogColor));
+    }
+
+    private final Color tmpColor = new Color();
+
+    Color setIntensity(Color color, float intensity){
+        tmpColor.set(color);
+        tmpColor.r *= intensity;
+        tmpColor.g *= intensity;
+        tmpColor.b *= intensity;
+        return tmpColor;
+    }
 
 
     boolean startLoading = false;
@@ -175,6 +223,11 @@ public class GameScreen extends ScreenAdapter {
         // update animations
         game.world.enemies.animate(delta);
         game.world.rogue.animationController.update(delta);
+
+        // update torches
+        int roomId = game.world.map.roomCode[focalActor.y][focalActor.x];
+        torchLights.update(delta, (roomId < 0 ? null :  game.world.map.rooms.get(roomId)));
+
 
         mat.setToRotation(Vector3.Y, 180-focalActor.direction.ordinal() * 90);
         playerDirection.set(Vector3.Z).mul(mat);

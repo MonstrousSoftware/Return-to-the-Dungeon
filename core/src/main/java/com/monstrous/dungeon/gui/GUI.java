@@ -108,6 +108,7 @@ public class GUI implements Disposable {
         Table messageBox = new Table();
         for(int i = 0; i < NUM_MESSAGES; i++) {
             messages[i] = new Label("..", skin, "smaller");
+            messages[i].setColor(Color.LIGHT_GRAY);
             messageBox.add(messages[i]).pad(3).left().row();
         }
         uiPanel.add(messageBox).pad(10).top().left().expand();

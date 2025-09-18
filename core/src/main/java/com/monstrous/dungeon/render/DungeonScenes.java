@@ -13,11 +13,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
+import com.monstrous.dungeon.MessageBox;
 import com.monstrous.dungeon.World;
 import com.monstrous.dungeon.map.*;
-import com.monstrous.dungeon.populus.CharacterStats;
-import com.monstrous.dungeon.populus.GameObject;
-import com.monstrous.dungeon.populus.GameObjectTypes;
+import com.monstrous.dungeon.populus.*;
 import com.monstrous.gdx.webgpu.graphics.g3d.WgModel;
 
 
@@ -312,59 +311,59 @@ public class DungeonScenes  {
             }
         }
     }
-//
-//    private int[] dx = { 0, -1, 1, 0, 0, -1, -1, 1, 1 };
-//    private int[] dy = { 0, 0, 0, -1, 1, 1, -1, 1, -1 };
-//
-//    // drop item at location x,y
-//    // if there is already something there of the same type, add it to the pile
-//    // if there is something else there try a nearby tile
-//    //
-//    public void dropObject(DungeonMap map, GameObjects gameObjects, GameObject item, int x, int y){
-//
-//        for(int offset = 0; offset < 9; offset++){
-//            int tx = x+dx[offset];
-//            int ty = y+dy[offset];
-//            TileType tile = map.getGrid(tx, ty);
-//            if(!TileType.droppable(tile))       // don't drop item inside a wall, etc.
-//                continue;
-//            GameObject occupant = gameObjects.getOccupant(tx,ty);
-//            // anything already there?
-//            if(occupant == null) {  // empty spot
-//                placeObject(gameObjects, item, tx, ty);
-//                return;
-//            }
-//            else if(item.type.isCountable && (occupant.type == item.type || occupant.type.isArrow && item.type.isArrow)) {   // same type
-//                occupant.quantity+= item.quantity;        // add to the pile
-//                if(occupant.type.isArrow && occupant.quantity > 0){ // change single arrow to bundle
-//                    removeScene(occupant);
-//                    occupant.type = GameObjectTypes.arrows;
-//                    addScene(occupant);
-//                }
-//                return;
-//            }
-//        }
-//        // can't place
-//        MessageBox.addLine(item.type.name+ " dropped and disappeared.");
-//    }
-//
-//    public void placeObject(GameObjects gameObjects, GameObjectType type, int x, int y){
-//        GameObject go = new GameObject(type, x, y, Direction.SOUTH);
-//        placeObject(gameObjects, go, x, y);
-//    }
-//
-//    public void placeObject(GameObjects gameObjects, GameObject item, int x, int y){
-//        item.x = x;
-//        item.y = y;
-//        item.z = item.type.z;
-//
-//        addScene(item);
-//        gameObjects.add(item);
-//        if(!item.type.isPlayer)
-//            gameObjects.setOccupant(x, y, item);
-//        // how to handle enemies walking over gold etc.
-//    }
-//
+
+    private final int[] dx = { 0, -1, 1, 0, 0, -1, -1, 1, 1 };
+    private final int[] dy = { 0, 0, 0, -1, 1, 1, -1, 1, -1 };
+
+    // drop item at location x,y
+    // if there is already something there of the same type, add it to the pile
+    // if there is something else there try a nearby tile
+    //
+    public void dropObject(DungeonMap map, GameObjects gameObjects, GameObject item, int x, int y){
+
+        for(int offset = 0; offset < 9; offset++){
+            int tx = x+dx[offset];
+            int ty = y+dy[offset];
+            TileType tile = map.getGrid(tx, ty);
+            if(!TileType.droppable(tile))       // don't drop item inside a wall, etc.
+                continue;
+            GameObject occupant = gameObjects.getOccupant(tx,ty);
+            // anything already there?
+            if(occupant == null) {  // empty spot
+                placeObject(gameObjects, item, tx, ty);
+                return;
+            }
+            else if(item.type.isCountable && (occupant.type == item.type || occupant.type.isArrow && item.type.isArrow)) {   // same type
+                occupant.quantity+= item.quantity;        // add to the pile
+                if(occupant.type.isArrow && occupant.quantity > 0){ // change single arrow to bundle
+                    removeScene(occupant);
+                    occupant.type = GameObjectTypes.arrows;
+                    addScene(occupant);
+                }
+                return;
+            }
+        }
+        // can't place
+        MessageBox.addLine(item.type.name+ " dropped and disappeared.");
+    }
+
+    public void placeObject(GameObjects gameObjects, GameObjectType type, int x, int y){
+        GameObject go = new GameObject(type, x, y, Direction.SOUTH);
+        placeObject(gameObjects, go, x, y);
+    }
+
+    public void placeObject(GameObjects gameObjects, GameObject item, int x, int y){
+        item.x = x;
+        item.y = y;
+        item.z = item.type.z;
+
+        addScene(item);
+        gameObjects.add(item);
+        if(!item.type.isPlayer)
+            gameObjects.setOccupant(x, y, item);
+        // how to handle enemies walking over gold etc.
+    }
+
 
     /** add visual representation to game object, i.e. a ModelInstance plus animation controller */
     public void addScene(GameObject gameObject){

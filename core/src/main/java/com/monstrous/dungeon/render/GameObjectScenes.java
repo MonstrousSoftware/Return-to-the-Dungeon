@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.monstrous.dungeon.ShowCase;
 import com.monstrous.dungeon.populus.GameObjectType;
 import com.monstrous.dungeon.populus.GameObjectTypes;
 import com.monstrous.gdx.webgpu.graphics.WgTexture;
@@ -49,6 +50,7 @@ public class GameObjectScenes {
             "models/bottle_C_green.gltf",
             "models/sword_2handed_color.gltf",
     };
+    public static Sprite emptyIcon;
 
     /** queue assets in the asset manager to start async loading. */
     public void queueAssets(AssetManager assets){
@@ -102,22 +104,11 @@ public class GameObjectScenes {
     // generate icons for each type
     private void addIcons(){
 
-//        ShowCase showCase = new ShowCase();
-//        emptyIcon = showCase.makeIcon(null, ICON_SIZE, ICON_SIZE, false);
+        ShowCase showCase = new ShowCase();
+        emptyIcon = showCase.makeIcon(null, ICON_SIZE, ICON_SIZE, false);
         for(GameObjectType type : types ){
-            Pixmap pixmap = new Pixmap(ICON_SIZE, ICON_SIZE, Pixmap.Format.RGBA8888);
-            pixmap.setColor(Color.BLUE);
-            pixmap.fill();
-            WgTexture texture = new WgTexture(pixmap);
-            Sprite icon = new Sprite(texture);
-            //Sprite icon = showCase.makeIcon(type.sceneAsset, ICON_SIZE, ICON_SIZE, type.isEnemy || type.isPlayer || type == GameObjectTypes.bigSword);
-            type.icon = icon;
+            type.icon = showCase.makeIcon(type.sceneAsset, ICON_SIZE, ICON_SIZE, type.isEnemy || type.isPlayer || type == GameObjectTypes.bigSword);
         }
     }
-
-
-
-
-
 
 }
