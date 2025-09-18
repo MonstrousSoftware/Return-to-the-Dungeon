@@ -26,12 +26,17 @@ import com.monstrous.dungeon.render.DungeonScenes;
 import com.monstrous.dungeon.render.GameObjectScenes;
 import com.monstrous.dungeon.render.SceneManager;
 import com.monstrous.gdx.webgpu.assets.WgAssetManager;
+import com.monstrous.gdx.webgpu.graphics.WgCubemap;
 import com.monstrous.gdx.webgpu.graphics.g2d.WgBitmapFont;
 import com.monstrous.gdx.webgpu.graphics.g2d.WgSpriteBatch;
+import com.monstrous.gdx.webgpu.graphics.g3d.WgModelBatch;
+import com.monstrous.gdx.webgpu.graphics.g3d.attributes.WgCubemapAttribute;
+import com.monstrous.gdx.webgpu.graphics.g3d.environment.ibl.IBLGenerator;
+import com.monstrous.gdx.webgpu.graphics.g3d.shaders.WgDefaultShader;
 import com.monstrous.gdx.webgpu.graphics.utils.WgScreenUtils;
 import com.monstrous.gdx.webgpu.scene2d.WgSkin;
 import com.monstrous.gdx.webgpu.scene2d.WgStage;
-
+import com.monstrous.gdx.webgpu.wrappers.SkyBox;
 
 
 public class GameScreen extends ScreenAdapter {
@@ -64,6 +69,7 @@ public class GameScreen extends ScreenAdapter {
     GameObjectScenes gameObjectScenes;
     private GameObject focalActor;    // who the camera is following, normally the Rogue
     private TorchLights torchLights;
+    private SkyBox skyBox;
 
     public GameScreen(Main game) {
         this.game = game;
@@ -127,22 +133,47 @@ public class GameScreen extends ScreenAdapter {
 
         float ambientLevel = 0.02f;
         ColorAttribute ambient =  ColorAttribute.createAmbientLight(ambientLevel, ambientLevel, ambientLevel, 1f);
-        environment.set(ambient);
+ //       environment.set(ambient);
 
-        DirectionalLight dirLight1 = new DirectionalLight();
-        dirLight1.setDirection(-.5f, -.4f, .5f);
-        dirLight1.setColor(setIntensity(Color.ORANGE, .6f));
-        environment.add(dirLight1);
+//        DirectionalLight dirLight1 = new DirectionalLight();
+//        dirLight1.setDirection(-.5f, -.4f, .5f);
+//        dirLight1.setColor(setIntensity(Color.ORANGE, .6f));
+//        environment.add(dirLight1);
 
-        DirectionalLight dirLight2 = new DirectionalLight();
-        dirLight2.setDirection(-.5f, .4f, -.5f);
-        dirLight2.setColor(setIntensity(Color.PURPLE, 0.3f));
-        environment.add(dirLight2);
+//        DirectionalLight dirLight2 = new DirectionalLight();
+//        dirLight2.setDirection(-.5f, .4f, -.5f);
+//        dirLight2.setColor(setIntensity(Color.PURPLE, 0.3f));
+//        environment.add(dirLight2);
+//
+//        DirectionalLight dirLight3 = new DirectionalLight();
+//        dirLight3.setDirection(.5f, -.4f, .3f);
+//        dirLight3.setColor(setIntensity(Color.RED, 0.8f));
+//        environment.add(dirLight3);
 
-        DirectionalLight dirLight3 = new DirectionalLight();
-        dirLight3.setDirection(.5f, -.4f, .3f);
-        dirLight3.setColor(setIntensity(Color.RED, 0.8f));
-        environment.add(dirLight3);
+
+        DirectionalLight sun = new DirectionalLight();
+        sun.setColor(setIntensity(Color.ORANGE, 0.1f));
+        sun.setDirection( -.5f, -.5f, -.0f);
+
+
+        // Create an outdoor environment map
+        WgCubemap envMap = IBLGenerator.createOutdoor(sun, 64);
+
+        // Diffuse cube map (irradiance map)
+        //
+        WgCubemap irradianceMap = IBLGenerator.buildIrradianceMap(envMap, 16);
+
+        // Specular cube map (radiance map)
+        //
+        WgCubemap radianceMap = IBLGenerator.buildRadianceMap(envMap, 128);
+
+        // use cube map as a sky box
+        //skyBox = new SkyBox(radianceMap);
+
+
+        environment.set( WgCubemapAttribute.createDiffuseCubeMap(irradianceMap));   // add irradiance map
+        environment.set( WgCubemapAttribute.createSpecularCubeMap(radianceMap));    // add radiance map
+
 
 //        PointLight pointLight2 = new PointLight();
 //        pointLight2.setPosition(1f, 1f, 1f);
@@ -234,6 +265,7 @@ public class GameScreen extends ScreenAdapter {
         camController.update(focus, playerDirection);
 
         sceneManager.render(cam);
+        //skyBox.renderPass(cam);
 
         gui.render(delta);
 	}
