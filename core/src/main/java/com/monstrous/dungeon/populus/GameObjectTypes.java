@@ -42,6 +42,8 @@ public class GameObjectTypes  {
     public static GameObjectType bottle_C_brown;
     public static GameObjectType bottle_C_green;
 
+    public static GameObjectType cactus;
+
     public static GameObjectType bigSword;
 
     public static Array<GameObjectType> types;
@@ -83,6 +85,10 @@ public class GameObjectTypes  {
         imp.isEnemy = true;
         imp.initXP = 8;
         types.add(imp);
+
+        // easter egg on level 0
+        cactus = new GameObjectType("a Furry Cactus", false, true, 0, 0, 1, 1);
+        types.add(cactus);
 
         gold = new GameObjectType("Gold", false, true, 0, 99, 2, 10);
         //gold.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/coin_stack_small.gltf"));
@@ -239,6 +245,8 @@ public class GameObjectTypes  {
         //bottle_C_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_C_green.gltf"));
         bottle_C_green.isPotion = true;
         types.add(bottle_C_green);
+
+
 
         bigSword = new GameObjectType("the Sword of Yobled!", false, true, 5, 7, 0, 0);     // needs some external logic to ensure there is only one
         //bigSword.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/sword_2handed_color.gltf"));

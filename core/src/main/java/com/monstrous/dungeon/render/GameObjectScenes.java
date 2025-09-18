@@ -49,6 +49,7 @@ public class GameObjectScenes {
             "models/bottle_C_brown.gltf",
             "models/bottle_C_green.gltf",
             "models/sword_2handed_color.gltf",
+            "models/furryCactus.glb"
     };
     public static Sprite emptyIcon;
 
@@ -96,6 +97,7 @@ public class GameObjectScenes {
         GameObjectTypes.bottle_C_brown.sceneAsset = assets.get(fileNames[index++], Model.class);
         GameObjectTypes.bottle_C_green.sceneAsset = assets.get(fileNames[index++], Model.class);
         GameObjectTypes.bigSword.sceneAsset = assets.get(fileNames[index++], Model.class);
+        GameObjectTypes.cactus.sceneAsset = assets.get(fileNames[index++], Model.class);
 
         addIcons();
     }
