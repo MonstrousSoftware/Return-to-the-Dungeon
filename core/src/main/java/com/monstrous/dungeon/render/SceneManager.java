@@ -26,6 +26,8 @@ public class SceneManager implements Disposable {
         WgDefaultShader.Config config = new WgDefaultShader.Config();
         config.maxPointLights = 1+DungeonScenes.MAX_TORCHES;
         config.numBones = 48;
+        config.maxRigged = 50;
+
         modelBatch = new WgModelBatch(config);
         instances = new Array<>();
         fogColor = Color.BLACK;

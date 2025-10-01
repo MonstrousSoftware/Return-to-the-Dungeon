@@ -1,8 +1,18 @@
 # Dungeon
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+This is a derivative of the jam game "Dungeon-Game" using gdx-webgpu and switching from 
+iso-metric view to a third-person perspective, with an idea to submit it for LibGDX game jam #34 which had
+"dungeons" as theme.
 
-This project was generated with a template including simple application launchers and a main class extending `Game` that sets the first screen.
+I did not submit it, because I ran out of time and because it was not very original.
+I also ran into some gdx-webgpu bugs I had to fix first 
+(e.g. to support multiple rigged characters).  
+
+Also, this type of game does not play nicely in third-person view and worked much better 
+in isometric.
+
+
+
 
 ## Platforms
 
@@ -10,27 +20,3 @@ This project was generated with a template including simple application launcher
 - `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
 - `teavm`: Web backend that supports most JVM languages.
 
-## Gradle
-
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
-
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `teavm:build`: builds the JavaScript application into the build/dist/webapp folder.
-- `teavm:run`: serves the JavaScript application at http://localhost:8080 via a local Jetty server.
-- `test`: runs unit tests (if any).
-
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
